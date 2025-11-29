@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Donor Details - {{ donor.donor_id }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px;">
+    <div class="page-header d-flex justify-between align-center">
+        <div>
+            <h1>
+                <i class="fas fa-hand-holding-heart"></i>
+                Donor Profile
+            </h1>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">ID: {{ donor.donor_id }}</p>
+        </div>
+        <div>
+            <button onclick="copyToClipboard('{{ donor.donor_id }}')" class="btn btn-secondary">
+                <i class="fas fa-copy"></i> Copy ID
+            </button>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <!-- Basic Information -->
+        <div class="detail-card">
+            <h3><i class="fas fa-id-card"></i> Basic Information</h3>
+            <div class="detail-row">
+                <span class="detail-label">Full Name</span>
+                <span class="detail-value">{{ donor.name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Age</span>
+                <span class="detail-value">{{ age }} years</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Gender</span>
+                <span class="detail-value">{{ donor.gender }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Blood Group</span>
+                <span class="detail-value"><span class="badge badge-success">{{ donor.blood_group }}</span></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Contact</span>
+                <span class="detail-value">{{ donor.contact }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Location</span>
+                <span class="detail-value">{{ donor.location }}</span>
+            </div>
+        </div>
+
+        <!-- Physical Metrics -->
+        <div class="detail-card">
+            <h3><i class="fas fa-weight"></i> Physical Metrics</h3>
+            <div class="detail-row">
+                <span class="detail-label">Weight</span>
+                <span class="detail-value">{{ donor.weight_kg }} kg</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Height</span>
+                <span class="detail-value">{{ donor.height_cm }} cm</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">BMI</span>
+                <span class="detail-value">{{ bmi }}</span>
+            </div>
+        </div>
+
+        <!-- Donation Information -->
+        <div class="detail-card">
+            <h3><i class="fas fa-heartbeat"></i> Donation Information</h3>
+            <div class="detail-row">
+                <span class="detail-label">Organ Type</span>
+                <span class="detail-value"><strong>{{ donor.organ_type }}</strong></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value">{{ donor.status|title }}</span>
+            </div>
+            {% if donor.death_date %}
+            <div class="detail-row">
+                <span class="detail-label">Death Date (Heart)</span>
+                <span class="detail-value">{{ donor.death_date }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Hospital Information -->
+        <div class="detail-card">
+            <h3><i class="fas fa-hospital"></i> Hospital Information</h3>
+            <div class="detail-row">
+                <span class="detail-label">Hospital</span>
+                <span class="detail-value">{{ donor.hospital_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Location</span>
+                <span class="detail-value">{{ donor.location_city }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Doctor Assigned</span>
+                <span class="detail-value">{{ donor.doctor_assigned }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Contact</span>
+                <span class="detail-value">{{ donor.contact_phone }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Organ-Specific Metrics -->
+    {% if organ_metrics %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 style="margin: 0;"><i class="fas fa-stethoscope"></i> Organ-Specific Metrics</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                {% for key, value in organ_metrics.items() %}
+                <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.375rem;">
+                    <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 0.25rem;">{{ key|replace('_', ' ')|title }}</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">{{ value }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Medical History -->
+    {% if medical_history %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 style="margin: 0;"><i class="fas fa-notes-medical"></i> Medical History</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                {% for condition in medical_history %}
+                <span class="badge badge-warning" style="padding: 0.5rem 1rem; font-size: 0.95rem;">
+                    <i class="fas fa-check"></i> {{ condition }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+        <a href="{{ url_for('my_donors') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        {% if donor.hospital_id == session.hospital_id %}
+        <a href="{{ url_for('edit_donor', donor_id=donor.donor_id) }}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit Donor
+        </a>
+        <form method="POST" action="{{ url_for('delete_donor_route', donor_id=donor.donor_id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to mark this donor as inactive?');">
+            <button type="submit" class="btn btn-danger" name="status" value="inactive">
+                <i class="fas fa-trash"></i> Mark Inactive
+            </button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('matches') }}" class="btn btn-primary">
+            <i class="fas fa-link"></i> View Matches
+        </a>
+    </div>
+</div>
+{% endblock %}

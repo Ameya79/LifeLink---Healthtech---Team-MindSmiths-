@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Network Patients - LifeLink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-users"></i>
+            Network Patients
+        </h1>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">All patients across the LifeLink network</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <div class="filters-grid">
+            <div>
+                <label class="form-label">Blood Group</label>
+                <select id="blood-filter" class="form-select" data-table="patients-table">
+                    <option value="all">All</option>
+                    <option value="A+">A+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Organ Needed</label>
+                <select id="organ-filter" class="form-select" data-table="patients-table">
+                    <option value="all">All</option>
+                    <option value="Kidney">Kidney</option>
+                    <option value="Liver">Liver</option>
+                    <option value="Heart">Heart</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Search</label>
+                <input type="text" id="table-search" class="form-control" placeholder="Search..." data-table="patients-table">
+            </div>
+        </div>
+    </div>
+
+    <!-- Patients Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3 style="margin: 0;">All Patients ({{ patients|length }})</h3>
+        </div>
+        <div class="table-responsive">
+            {% if patients %}
+            <table class="table" id="patients-table">
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Blood</th>
+                        <th>Organ</th>
+                        <th>Urgency</th>
+                        <th>Location</th>
+                        <th>Hospital</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr data-id="{{ patient.patient_id }}" data-type="patient" data-blood="{{ patient.blood_group }}" data-organ="{{ patient.organ_needed }}">
+                        <td><strong>{{ patient.patient_id }}</strong></td>
+                        <td><span class="badge badge-danger">{{ patient.blood_group }}</span></td>
+                        <td><i class="fas fa-heartbeat"></i> {{ patient.organ_needed }}</td>
+                        <td>
+                            {% if patient.urgency_score >= 80 %}
+                            <span class="badge urgency-critical">{{ patient.urgency_score }}%</span>
+                            {% else %}
+                            <span class="badge urgency-high">{{ patient.urgency_score }}%</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ patient.location }}</td>
+                        <td style="color: var(--text-secondary);">
+                            {% if patient.hospital_id == my_hospital_id %}
+                            <strong>Your Hospital</strong>
+                            {% else %}
+                            {{ patient.hospital_name }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align: center; padding: 4rem;">
+                <p style="color: var(--text-secondary);">No patients in network</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

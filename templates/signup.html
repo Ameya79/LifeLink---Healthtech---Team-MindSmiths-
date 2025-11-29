@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital Registration - LifeLink{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; padding-top: 3rem; padding-bottom: 3rem;">
+    <div class="card">
+        <div class="card-header" style="background: var(--primary); color: white;">
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-hospital-user"></i>
+                Hospital Registration
+            </h2>
+        </div>
+        <div class="card-body" style="padding: 32px;">
+            <div class="alert alert-info mb-4">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                    <strong>Approved Hospital Network</strong>
+                    <p style="margin: 0.5rem 0 0 0;">Enter your license number to auto-fill registered hospitals. New hospitals can still complete registration and will be verified by our onboarding team.</p>
+                </div>
+            </div>
+
+            <form method="POST" data-validate>
+                <!-- License Verification -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-certificate"></i> Hospital License Number *
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="license_number"
+                        name="license_number" 
+                        placeholder="e.g., MH123456"
+                        pattern="[A-Z]{2}\d{6}"
+                        title="Format: 2 letters + 6 digits (e.g., MH123456)"
+                        value="{{ license_number or '' }}"
+                        required
+                    >
+                    <small style="color: var(--text-muted);">Format: State Code (2 letters) + Number (6 digits)</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-hospital"></i> Hospital Name *
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="hospital_name"
+                        name="hospital_name" 
+                        value="{{ hospital_name or '' }}"
+                        required
+                    >
+                    <small style="color: var(--text-muted);">Auto-filled when license is pre-approved (editable for new hospitals)</small>
+                </div>
+
+                <!-- Location -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-city"></i> City *
+                        </label>
+                        <select class="form-select" name="location_city" required>
+                            <option value="">Select City</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="New Delhi">New Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Kolkata">Kolkata</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Pune">Pune</option>
+                            <option value="Ahmedabad">Ahmedabad</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-map"></i> State *
+                        </label>
+                        <select class="form-select" name="location_state" required>
+                            <option value="">Select State</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Gujarat">Gujarat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-building"></i> Hospital Type *
+                    </label>
+                    <select class="form-select" name="hospital_type" required>
+                        <option value="">Select Type</option>
+                        <option value="Government">Government</option>
+                        <option value="Private">Private</option>
+                        <option value="Trust">Trust / Non-Profit</option>
+                    </select>
+                </div>
+
+                <!-- Admin Details -->
+                <hr style="margin: 2rem 0; border-color: var(--border-color);">
+                <h4 style="color: var(--primary); margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-user-tie"></i> Administrator Details
+                </h4>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-user"></i> Admin Name *
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            name="admin_name" 
+                            value="{{ admin_name or '' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-id-badge"></i> Designation *
+                        </label>
+                        <select class="form-select" name="admin_designation" required>
+                            <option value="">Select Designation</option>
+                            <option value="Medical Director">Medical Director</option>
+                            <option value="CEO">CEO</option>
+                            <option value="Transplant Coordinator">Transplant Coordinator</option>
+                            <option value="Administrator">Administrator</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-phone"></i> Contact Phone *
+                        </label>
+                        <input 
+                            type="tel" 
+                            class="form-control" 
+                            name="contact_phone" 
+                            pattern="[0-9]{10}"
+                            placeholder="10-digit number"
+                            value="{{ contact_phone or '' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-envelope"></i> Official Email *
+                        </label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            name="contact_email" 
+                            placeholder="admin@hospital.in"
+                            value="{{ contact_email or '' }}"
+                            required
+                        >
+                        <small style="color: var(--text-muted);">Use official hospital email (not personal)</small>
+                    </div>
+                </div>
+
+                <!-- Account Credentials -->
+                <hr style="margin: 2rem 0; border-color: var(--border-color);">
+                <h4 style="color: var(--primary); margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-key"></i> Account Credentials
+                </h4>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-user"></i> Username *
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            name="username" 
+                            minlength="4"
+                            placeholder="Create username"
+                            value="{{ username or '' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-lock"></i> Password *
+                        </label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            name="password" 
+                            minlength="8"
+                            placeholder="Min 8 characters"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary btn-lg btn-block mt-4">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Register Hospital
+                </button>
+
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <p style="color: var(--text-secondary);">
+                        Already registered? 
+                        <a href="{{ url_for('login') }}" style="color: var(--primary); font-weight: 600;">Login here</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Approved Hospitals List -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4 style="margin: 0;">
+                <i class="fa-solid fa-list-check"></i> Approved Hospitals
+            </h4>
+        </div>
+        <div class="card-body">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Currently approved hospitals in the LifeLink network:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; font-size: 0.9rem;">
+                {% for license, name in approved_hospitals.items() %}
+                <div style="padding: 0.5rem; background: var(--bg-secondary); border-radius: 0.25rem;">
+                    <strong>{{ license }}</strong> - {{ name }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<script id="approved-hospitals-data" type="application/json">
+{{ approved_hospitals | tojson }}
+</script>
+{% endblock %}

@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Donor - LifeLink{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-edit"></i>
+            Edit Donor: {{ donor.donor_id }}
+        </h1>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding: 32px;">
+            <form method="POST" data-validate>
+                <!-- Basic Information -->
+                <h3 style="color: var(--text-primary); margin-bottom: 20px; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-id-card" style="color: var(--primary);"></i> Basic Information
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" value="{{ donor.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth *</label>
+                        <input type="date" class="form-control" name="dob" value="{{ donor.dob }}" max="{{ today }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender *</label>
+                        <select class="form-select" name="gender" required>
+                            <option value="">Select</option>
+                            <option value="Male" {% if donor.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if donor.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if donor.gender == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group *</label>
+                        <select class="form-select" name="blood_group" required>
+                            <option value="">Select</option>
+                            {% for bg in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
+                            <option value="{{ bg }}" {% if donor.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Number *</label>
+                        <input type="tel" class="form-control" name="contact" value="{{ donor.contact }}" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location *</label>
+                        <input type="text" class="form-control" name="location" value="{{ donor.location }}" placeholder="City" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Weight (kg) *</label>
+                        <input type="number" class="form-control" name="weight_kg" id="weight_kg" value="{{ donor.weight_kg }}" step="0.1" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Height (cm) *</label>
+                        <input type="number" class="form-control" name="height_cm" id="height_cm" value="{{ donor.height_cm }}" step="0.1" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">BMI (auto)</label>
+                        <input type="text" class="form-control" id="bmi-display" readonly value="--">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Doctor Assigned *</label>
+                    <input type="text" class="form-control" name="doctor_assigned" value="{{ donor.doctor_assigned }}" placeholder="Dr. Name" required>
+                </div>
+
+                <!-- Organ & Medical Info -->
+                <hr style="margin: 2rem 0; border-color: var(--border-color);">
+                <h3 style="color: var(--text-primary); margin-bottom: 20px; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-heartbeat" style="color: var(--primary);"></i> Donor Information
+                </h3>
+
+                <div class="form-group">
+                    <label class="form-label">Organ Type *</label>
+                    <select class="form-select" name="organ_type" id="organ_type" required>
+                        <option value="">Select Organ</option>
+                        {% for org in ['Kidney', 'Liver', 'Heart', 'Lung', 'Pancreas'] %}
+                        <option value="{{ org }}" {% if donor.organ_type == org %}selected{% endif %}>{{ org }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Kidney-Specific Fields -->
+                <div id="kidney-fields" class="organ-specific" style="display: none;">
+                    <h4 style="color: var(--text-secondary); margin: 1.5rem 0 1rem;">Kidney-Specific Metrics</h4>
+                    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
+                        <div>
+                            <label class="form-label" style="font-size: 0.875rem;">HLA-A1</label>
+                            <input type="text" class="form-control" name="hla_a1" value="{{ organ_metrics.get('hla_typing', {}).get('hla_a', [''])[0] if organ_metrics.get('hla_typing') else '' }}" placeholder="A1">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.875rem;">HLA-A2</label>
+                            <input type="text" class="form-control" name="hla_a2" value="{{ organ_metrics.get('hla_typing', {}).get('hla_a', ['', ''])[1] if organ_metrics.get('hla_typing') else '' }}" placeholder="A2">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.875rem;">HLA-B1</label>
+                            <input type="text" class="form-control" name="hla_b1" value="{{ organ_metrics.get('hla_typing', {}).get('hla_b', [''])[0] if organ_metrics.get('hla_typing') else '' }}" placeholder="B7">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.875rem;">HLA-B2</label>
+                            <input type="text" class="form-control" name="hla_b2" value="{{ organ_metrics.get('hla_typing', {}).get('hla_b', ['', ''])[1] if organ_metrics.get('hla_typing') else '' }}" placeholder="B8">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.875rem;">HLA-DR1</label>
+                            <input type="text" class="form-control" name="hla_dr1" value="{{ organ_metrics.get('hla_typing', {}).get('hla_dr', [''])[0] if organ_metrics.get('hla_typing') else '' }}" placeholder="DR1">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.875rem;">HLA-DR2</label>
+                            <input type="text" class="form-control" name="hla_dr2" value="{{ organ_metrics.get('hla_typing', {}).get('hla_dr', ['', ''])[1] if organ_metrics.get('hla_typing') else '' }}" placeholder="DR4">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Serum Creatinine (mg/dL)</label>
+                            <input type="number" class="form-control" name="serum_creatinine" value="{{ organ_metrics.get('serum_creatinine', '') }}" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Kidney Function (%)</label>
+                            <input type="number" class="form-control" name="kidney_function" value="{{ organ_metrics.get('kidney_function', '') }}" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liver-Specific Fields -->
+                <div id="liver-fields" class="organ-specific" style="display: none;">
+                    <h4 style="color: var(--text-secondary); margin: 1.5rem 0 1rem;">Liver-Specific Metrics</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">ALT (U/L)</label>
+                            <input type="number" class="form-control" name="alt" value="{{ organ_metrics.get('alt', '') }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">AST (U/L)</label>
+                            <input type="number" class="form-control" name="ast" value="{{ organ_metrics.get('ast', '') }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Liver Condition</label>
+                            <select class="form-select" name="liver_condition">
+                                <option value="Normal" {% if organ_metrics.get('liver_condition') == 'Normal' %}selected{% endif %}>Normal</option>
+                                <option value="Mild Damage" {% if organ_metrics.get('liver_condition') == 'Mild Damage' %}selected{% endif %}>Mild Damage</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heart-Specific Fields -->
+                <div id="heart-fields" class="organ-specific" style="display: none;">
+                    <h4 style="color: var(--text-secondary); margin: 1.5rem 0 1rem;">Heart-Specific Metrics</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Ejection Fraction (%)</label>
+                            <input type="number" class="form-control" name="ejection_fraction" value="{{ organ_metrics.get('ejection_fraction', '') }}" min="0" max="100" placeholder=">50%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Heart Condition</label>
+                            <select class="form-select" name="heart_condition">
+                                <option value="Excellent" {% if organ_metrics.get('heart_condition') == 'Excellent' %}selected{% endif %}>Excellent</option>
+                                <option value="Good" {% if organ_metrics.get('heart_condition') == 'Good' %}selected{% endif %}>Good</option>
+                                <option value="Fair" {% if organ_metrics.get('heart_condition') == 'Fair' %}selected{% endif %}>Fair</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Donor Death Date</label>
+                        <input type="date" class="form-control" name="death_date" value="{{ donor.death_date or '' }}">
+                        <small style="display: block; margin-top: 6px; color: var(--text-secondary);">Store the pronouncement date to keep the heart donation window compliant.</small>
+                    </div>
+                </div>
+
+                <!-- Pancreas-Specific Fields -->
+                <div id="pancreas-fields" class="organ-specific" style="display: none;">
+                    <h4 style="color: var(--text-secondary); margin: 1.5rem 0 1rem;">Pancreas-Specific Metrics</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Pancreas Function (%)</label>
+                            <input type="number" class="form-control" name="pancreas_function" value="{{ organ_metrics.get('pancreas_function', '') }}" min="0" max="100" placeholder="0-100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">C-peptide Level (ng/mL)</label>
+                            <input type="number" class="form-control" name="c_peptide_level" value="{{ organ_metrics.get('c_peptide_level', '') }}" step="0.1" min="0" placeholder=">0.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Islet Cell Viability (%)</label>
+                            <input type="number" class="form-control" name="islet_cell_viability" value="{{ organ_metrics.get('islet_cell_viability', '') }}" min="0" max="100" placeholder="0-100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lung-Specific Fields -->
+                <div id="lung-fields" class="organ-specific" style="display: none;">
+                    <h4 style="color: var(--text-secondary); margin: 1.5rem 0 1rem;">Lung-Specific Metrics</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">FEV1 Score (%)</label>
+                            <input type="number" class="form-control" name="fev1_score" value="{{ organ_metrics.get('fev1_score', '') }}" min="0" max="100" placeholder="≥70%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Smoking History</label>
+                            <select class="form-select" name="smoking_history">
+                                <option value="Never" {% if organ_metrics.get('smoking_history') == 'Never' %}selected{% endif %}>Never</option>
+                                <option value="Former" {% if organ_metrics.get('smoking_history') == 'Former' %}selected{% endif %}>Former Smoker</option>
+                                <option value="Current" {% if organ_metrics.get('smoking_history') == 'Current' %}selected{% endif %}>Current Smoker</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Chest X-ray Status</label>
+                            <select class="form-select" name="chest_xray_status">
+                                <option value="Normal" {% if organ_metrics.get('chest_xray_status') == 'Normal' %}selected{% endif %}>Normal</option>
+                                <option value="Clear" {% if organ_metrics.get('chest_xray_status') == 'Clear' %}selected{% endif %}>Clear</option>
+                                <option value="Abnormal" {% if organ_metrics.get('chest_xray_status') == 'Abnormal' %}selected{% endif %}>Abnormal - Review Required</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical History -->
+                <div class="form-group">
+                    <label class="form-label">Medical History (select all that apply)</label>
+                    <div class="checkbox-group">
+                        {% for condition in ['Diabetes', 'Hypertension', 'Heart Disease', 'Kidney Disease'] %}
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="medical_history" value="{{ condition }}" {% if condition in medical_history %}checked{% endif %}> {{ condition }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary btn-lg" style="flex: 1;">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                    <a href="{{ url_for('donor_detail', donor_id=donor.donor_id) }}" class="btn btn-outline btn-lg">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

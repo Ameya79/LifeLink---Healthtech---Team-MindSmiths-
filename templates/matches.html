@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Matches - LifeLink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-link"></i>
+            AI-Powered Organ Matches
+        </h1>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Intelligent matching based on medical compatibility and urgency</p>
+    </div>
+
+    <!-- Algorithm Info -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 style="margin: 0;"><i class="fas fa-brain"></i> Matching Algorithm</h3>
+        </div>
+        <div class="card-body">
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Our AI considers multiple factors including blood compatibility, HLA typing, organ-specific metrics, distance, and urgency to calculate match scores.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                <div style="background: var(--bg-secondary); padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--danger);">
+                    <strong style="display: block; margin-bottom: 4px; color: var(--text-primary); font-size: 13px;">Blood Match</strong>
+                    <span style="color: var(--text-secondary); font-size: 12px;">Up to 40 points</span>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--primary);">
+                    <strong style="display: block; margin-bottom: 4px; color: var(--text-primary); font-size: 13px;">Organ Match</strong>
+                    <span style="color: var(--text-secondary); font-size: 12px;">Up to 40 points</span>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--success);">
+                    <strong style="display: block; margin-bottom: 4px; color: var(--text-primary); font-size: 13px;">HLA/MELD</strong>
+                    <span style="color: var(--text-secondary); font-size: 12px;">Up to 25 points</span>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--warning);">
+                    <strong style="display: block; margin-bottom: 4px; color: var(--text-primary); font-size: 13px;">Distance</strong>
+                    <span style="color: var(--text-secondary); font-size: 12px;">Up to 15 points</span>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--primary);">
+                    <strong style="display: block; margin-bottom: 4px; color: var(--text-primary); font-size: 13px;">Urgency</strong>
+                    <span style="color: var(--text-secondary); font-size: 12px;">Up to 25 points</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matches Grid -->
+    {% if matches %}
+    <div style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+        Found <strong>{{ matches|length }}</strong> potential matches
+    </div>
+
+    <div class="match-grid">
+        {% for match in matches %}
+        <div class="match-card {% if match.score >= 85 %}excellent{% elif match.score >= 70 %}good{% else %}fair{% endif %}">
+            <div class="match-card__header">
+                <div>
+                    <span class="match-card__label">Match score</span>
+                    <div class="match-card__score">{{ match.score }}</div>
+                    <div class="match-card__rating">
+                        {% if match.score >= 85 %}
+                        <i class="fas fa-star"></i> Excellent match
+                        {% elif match.score >= 70 %}
+                        <i class="fas fa-thumbs-up"></i> Good match
+                        {% else %}
+                        <i class="fas fa-check"></i> Potential match
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="match-card__chip">
+                    <i class="fas fa-heartbeat"></i> {{ match.patient.organ_needed }} • {{ match.patient.blood_group }} ↔ {{ match.donor.blood_group }}
+                </div>
+            </div>
+
+            <div class="match-card__profiles">
+                <div class="match-profile">
+                    <div class="match-profile__role"><i class="fas fa-user-injured"></i> Patient</div>
+                    <div class="match-profile__name">{{ match.patient.name }}</div>
+                    <div class="match-profile__meta">{{ match.patient.patient_id }} • {{ match.patient.location }}</div>
+                    <div class="match-profile__stats">
+                        <span>Urgency <strong>{{ match.patient.urgency_score }}%</strong></span>
+                        <span>Organ <strong>{{ match.patient.organ_needed }}</strong></span>
+                    </div>
+                </div>
+                <div class="match-profile">
+                    <div class="match-profile__role"><i class="fas fa-hand-holding-heart"></i> Donor</div>
+                    <div class="match-profile__name">{{ match.donor.name }}</div>
+                    <div class="match-profile__meta">{{ match.donor.donor_id }} • {{ match.donor.location }}</div>
+                    <div class="match-profile__stats">
+                        <span>Organ <strong>{{ match.donor.organ_type }}</strong></span>
+                        <span>Blood <strong>{{ match.donor.blood_group }}</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-card__metrics">
+                <div class="metric">
+                    <span>Distance</span>
+                    <strong>
+                        {% if match.distance_km is not none %}
+                            {{ match.distance_km }} km
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+                <div class="metric">
+                    <span>Blood pairing</span>
+                    <strong>{{ match.patient.blood_group }} ↔ {{ match.donor.blood_group }}</strong>
+                </div>
+                <div class="metric">
+                    <span>Urgency tier</span>
+                    <strong>
+                        {% if match.patient.urgency_score >= 80 %}
+                            Critical
+                        {% elif match.patient.urgency_score >= 50 %}
+                            High
+                        {% else %}
+                            Moderate
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="match-card__analysis">
+                <h4><i class="fas fa-info-circle"></i> Why this works</h4>
+                <ul>
+                    {% for reason in match.reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="match-card__actions">
+                <a href="{{ url_for('match_detail', patient_id=match.patient.patient_id, donor_id=match.donor.donor_id) }}" class="btn btn-primary btn-block">
+                    <i class="fas fa-chart-line"></i> View Match Analysis
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 5rem 2rem;">
+            <i class="fas fa-search" style="font-size: 5rem; color: var(--text-muted); margin-bottom: 1.5rem;"></i>
+            <h3 style="color: var(--text-primary); margin-bottom: 1rem;">No Matches Found</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Add more patients and donors to discover potential life-saving matches
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{{ url_for('add_patient') }}" class="btn btn-danger btn-lg">
+                    <i class="fas fa-plus-circle"></i> Add Patient
+                </a>
+                <a href="{{ url_for('add_donor') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus-circle"></i> Add Donor
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

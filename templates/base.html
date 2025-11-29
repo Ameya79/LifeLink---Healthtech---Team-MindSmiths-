@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LifeLink - Hospital Portal{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% if session.hospital_id %}
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-shell">
+            <div class="nav-left">
+                <a href="{{ url_for('dashboard') }}" class="logo-brand">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    LifeLink
+                </a>
+                <form action="{{ url_for('search') }}" method="GET" class="search-form nav-search">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search ID..." 
+                        pattern="(PT|DN)-\d{3}-\d{4}-\d{3}"
+                        title="Enter Patient ID or Donor ID"
+                    >
+                    <button type="submit" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="nav-center">
+                <a href="{{ url_for('dashboard') }}" class="nav-link" title="Dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('my_patients') }}" class="nav-link" title="My Patients">
+                    <i class="fa-solid fa-user-injured"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="{{ url_for('my_donors') }}" class="nav-link" title="My Donors">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <span>Donors</span>
+                </a>
+                <a href="{{ url_for('matches') }}" class="nav-link" title="Matches">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span>Matches</span>
+                </a>
+            </div>
+            
+            <div class="nav-right">
+                <div class="nav-notifications">
+                    <button id="notifications-btn" aria-label="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="notification-count">0</span>
+                    </button>
+                    <div id="notifications-dropdown">
+                        <div class="dropdown-head">
+                            <span>Notifications</span>
+                            <button id="mark-all-read">Mark all read</button>
+                        </div>
+                        <div id="notifications-list">
+                            <div style="padding: 32px; text-align: center; color: var(--text-muted);">Loading notifications...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('settings') }}" class="nav-link" title="Settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Settings</span>
+                </a>
+                
+                <span class="hospital-badge">
+                    <i class="fa-solid fa-hospital"></i>
+                    <span>{{ session.hospital_name }}</span>
+                </span>
+                
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- REM Chatbot -->
+    {% if session.hospital_id %}
+    <div id="rem-chatbot">
+        <div id="rem-button" onclick="toggleRemChat()">
+            <i class="fa-solid fa-robot"></i>
+            <span>REM</span>
+        </div>
+        <div id="rem-chat-window" style="display: none;">
+            <div class="rem-header">
+                <div>
+                    <strong>REM</strong>
+                    <span style="font-size: 12px; color: var(--text-muted);">Resource & Emergency Matching</span>
+                </div>
+                <button onclick="toggleRemChat()" style="background: none; border: none; cursor: pointer; color: var(--text-primary);">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="rem-messages" class="rem-messages"></div>
+            <div class="rem-input-area">
+                <input type="text" id="rem-input" placeholder="Ask REM anything... (e.g., 'Show critical patients in Mumbai')" onkeypress="if(event.key==='Enter') sendRemMessage()">
+                <button onclick="sendRemMessage()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Flash Messages -->
+    {% if request.endpoint != 'index' %}
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fa-solid fa-{{ 'circle-check' if category == 'success' else 'triangle-exclamation' if category == 'danger' else 'circle-info' }}"></i>
+                        {{ message }}
+                        <button class="btn-close" style="margin-left: auto; background: none; border: none; cursor: pointer;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    {% if session.hospital_id %}
+    <footer class="footer">
+        <p>
+            <i class="fa-solid fa-heart" style="color: var(--danger);"></i>
+            LifeLink - Connecting Lives, Saving Futures
+        </p>
+        <p style="font-size: 0.875rem; color: var(--text-muted);">
+            © 2024 LifeLink. Professional organ donation coordination platform.
+        </p>
+    </footer>
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
