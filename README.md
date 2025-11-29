@@ -302,11 +302,9 @@ Access at: `http://localhost:5000`
 
 ### **6. Demo Hospital Credentials**
 ```
-Default Hospital (Pre-loaded):
-- Hospital: AIIMS New Delhi
-- License: AIIMS-ND-2024
-- Username: aiims_admin
-- Password: (check database.py for default hash)
+Default Hospital Login Details:
+Username: apollo_mumbai
+Password: apollo123
 ```
 
 ---
@@ -556,8 +554,8 @@ Recommendation: "Good candidate for cross-hospital coordination"
 Authenticate hospital user
 ```bash
 curl -X POST http://localhost:5000/login \
-  -d "username=aiims_admin" \
-  -d "password=password123"
+  -d "username=apollo_mumbai" \
+  -d "password=apollo123"
 ```
 
 #### **POST /signup**
