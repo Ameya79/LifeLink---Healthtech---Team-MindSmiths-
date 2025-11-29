@@ -3128,3 +3128,114 @@ a {
         touch-action: manipulation;
     }
 }
+
+/* ============================================
+   MOBILE / SMALL SCREEN ADJUSTMENTS
+   These rules apply only on small screens and
+   are intentionally scoped with max-width
+   media queries so desktop appearance is
+   unaffected.
+   ============================================ */
+@media (max-width: 768px) {
+    /* Slightly smaller base type for mobile */
+    body {
+        font-size: 13px;
+    }
+
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    /* Headings scale down on mobile */
+    h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+
+    /* Navbar: wrap and simplify */
+    .nav-shell {
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .nav-center {
+        display: none; /* hide center nav to save space */
+    }
+
+    .nav-left { flex: 1 1 100%; }
+    .nav-right { margin-left: 0; gap: 8px; }
+
+    .logo-brand { font-size: 16px; }
+    .logo-brand i { font-size: 18px; }
+
+    .nav-search {
+        order: 2;
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .search-form input { width: 100%; max-width: 260px; }
+
+    .hospital-badge { max-width: 140px; padding: 6px 8px; font-size: 12px; }
+    .logout-btn { padding: 6px 10px; font-size: 12px; }
+
+    /* Compact nav-link appearance */
+    .nav-link { padding: 6px 8px; min-width: 48px; }
+    .nav-link span { display: none; } /* keep icons only on mobile */
+
+    /* Hero becomes single column */
+    .hero-section { padding: 40px 12px; }
+    .hero-content { grid-template-columns: 1fr; gap: 24px; }
+    .hero-copy h1 { font-size: 28px; }
+    .hero-copy p { font-size: 15px; }
+
+    /* Landing page specific overrides (override inline styles) */
+    .hero-section h1 { font-size: 28px !important; line-height: 1.15 !important; }
+    .hero-section p { font-size: 15px !important; max-width: 92% !important; margin-left: auto !important; margin-right: auto !important; }
+    .landing-nav .nav-inner { padding: 0 12px; }
+    .landing-nav .nav-links { display: none; } /* hide large nav links on phones */
+    .landing-nav .nav-cta { margin-left: auto; }
+
+    /* Stats and match cards stack */
+    .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .match-grid { grid-template-columns: 1fr; gap: 12px; }
+    .match-card__score { font-size: 36px; }
+    .match-card__profiles { grid-template-columns: 1fr; padding: 12px; }
+    .match-card__metrics { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; padding: 12px; }
+
+    /* Tables - make them readable without changing desktop */
+    .table th, .table td { font-size: 13px; padding: 8px 10px; }
+
+    /* Cards, forms and smaller paddings */
+    .card-header { padding: 12px; }
+    .card-body { padding: 12px; }
+    .form-control, .form-select { padding: 8px 10px; }
+
+    /* Footer smaller */
+    .footer p { font-size: 13px; }
+
+    /* Notifications dropdown widen on mobile */
+    #notifications-dropdown { width: 92vw; left: 4vw; right: 4vw; max-width: 360px; }
+
+    /* REM chatbot compact */
+    #rem-button span { display: none; }
+    #rem-button { padding: 8px; font-size: 14px; }
+
+    /* Make buttons fit */
+    .btn { padding: 8px 10px; }
+    .btn-block { width: 100%; }
+}
+
+@media (max-width: 420px) {
+    /* Further reduce sizes for small phones */
+    body { font-size: 12px; }
+    h1 { font-size: 20px; }
+    .hero-copy h1 { font-size: 22px; }
+    .logo-brand { font-size: 15px; }
+    .logout-btn { padding: 6px 8px; font-size: 11px; }
+    .hospital-badge { max-width: 120px; font-size: 11px; }
+    .search-form input { max-width: 200px; }
+    .nav-search { margin-top: 6px; }
+    .card-header, .card-body { padding: 10px; }
+}
