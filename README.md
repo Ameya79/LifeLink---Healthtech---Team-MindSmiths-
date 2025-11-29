@@ -118,7 +118,10 @@ India faces an **acute organ shortage crisis**:
 <img width="1075" height="777" alt="image" src="https://github.com/user-attachments/assets/3d7a360f-50fa-4dcd-b4a5-e95844806ff2" />
 <img width="827" height="681" alt="image" src="https://github.com/user-attachments/assets/e2cbbabe-f4e6-4f2c-953d-b99070dbaf9e" />
 <img width="800" height="782" alt="image" src="https://github.com/user-attachments/assets/12eeef51-63b3-4bc4-90a2-bcf532898063" />
-### Dark Mode:
+
+Dark Mode:
+
+
 <img width="412" height="257" alt="image" src="https://github.com/user-attachments/assets/e0a7fd09-69cd-43df-9192-9ff188017706" />
 <img width="515" height="677" alt="image" src="https://github.com/user-attachments/assets/798e333e-bc55-4a60-b6e9-b0d8f49ed3ab" />
 <img width="1558" height="797" alt="image" src="https://github.com/user-attachments/assets/ab86351f-05e4-40d6-8592-c8aaa69f2cd3" />
