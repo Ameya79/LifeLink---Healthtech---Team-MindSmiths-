@@ -895,14 +895,6 @@ git push origin feature/your-feature
 
 ---
 
-## 📞 Support & Contact
-
-- **Questions?** Open an issue on GitHub
-- **Clinical Inquiries?** Contact: lifelink@hospital-network.org
-- **Bug Reports?** Email: support@lifelink.io
-
----
-
 ## 📜 License
 
 This project is licensed under the **MIT License** — see `LICENSE.md` for details.
